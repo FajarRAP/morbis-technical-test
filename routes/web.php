@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Queue\QueueActionController;
 use App\Http\Controllers\Queue\QueueDisplayController;
 use App\Http\Controllers\Queue\QueueListController;
 use Illuminate\Support\Facades\Route;
@@ -11,7 +12,8 @@ Route::post('/queue/take', [QueueDisplayController::class, 'take'])->name('queue
 
 Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('dashboard', [QueueListController::class, 'index'])->name('dashboard');
-    Route::get('next', function () {})->name('admin.next');
+    Route::get('queue/waiting-list', [QueueListController::class, 'waitingList'])->name('queue.waiting-list');
+    Route::post('next', [QueueActionController::class, 'next'])->name('admin.next');
 });
 
 Route::get('/dashboard', fn() => redirect('admin/dashboard'));
