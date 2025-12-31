@@ -17,7 +17,7 @@
             </div>
 
             <div class="p-6 bg-gray-50">
-                <button onclick="takeQueue()" id="btn-ambil"
+                <button id="btn-take"
                     class="inline-flex items-center justify-center w-full px-6 py-4 bg-blue-600 border border-transparent rounded-xl font-semibold text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-lg gap-2">
 
                     <i class="fa-solid fa-ticket"></i>
@@ -38,4 +38,33 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script>
+            const takeButton = document.getElementById('btn-take');
+            takeButton.addEventListener('click', takeQueue);
+
+            async function takeQueue() {
+                try {
+                    takeButton.disabled = true;
+                    takeButton.classList.add('opacity-50', 'cursor-not-allowed');
+
+                    const response = await axios.post("{{ route('queue.take') }}");
+
+                    if (response.data) {
+                        // do something with response data
+                    } else {
+                        alert('Gagal mengambil nomor antrian. Silakan coba lagi.');
+                    }
+                } catch (error) {
+                    console.error(error);
+                    alert('Terjadi kesalahan saat mengambil nomor antrian.');
+                } finally {
+                    takeButton.disabled = false;
+                    takeButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            }
+        </script>
+    @endpush
 </x-app-layout>
