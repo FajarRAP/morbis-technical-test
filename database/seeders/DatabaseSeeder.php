@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\Queue;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -21,5 +22,11 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+        for ($i = 1; $i <= 20; $i++) {
+            Queue::create([
+                'number' => $i,
+                'date' => today()->toDateString(),
+            ]);
+        }
     }
 }
