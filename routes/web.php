@@ -10,7 +10,7 @@ Route::get('/queue/current', [QueueDisplayController::class, 'current'])->name('
 Route::post('/queue/take', [QueueDisplayController::class, 'take'])->name('queue.take');
 
 Route::prefix('admin')->middleware(['auth'])->group(function () {
-    Route::get('dashboard', [QueueListController::class, 'index'])->name('admin.dashboard');
+    Route::get('dashboard', [QueueListController::class, 'index'])->name('dashboard');
     Route::get('next', function () {})->name('admin.next');
 });
 
