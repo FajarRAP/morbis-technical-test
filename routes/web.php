@@ -1,15 +1,20 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Queue\QueueDisplayController;
+use App\Http\Controllers\Queue\QueueListController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', [QueueDisplayController::class, 'index'])->name('queue.display');
+Route::get('/queue/current', [QueueDisplayController::class, 'current'])->name('queue.current');
+Route::post('/queue/take', [QueueDisplayController::class, 'take'])->name('queue.take');
+
+Route::prefix('admin')->middleware(['auth'])->group(function () {
+    Route::get('dashboard', [QueueListController::class, 'index'])->name('admin.dashboard');
+    Route::get('next', function () {})->name('admin.next');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', fn() => redirect('admin/dashboard'));
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -17,4 +22,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
