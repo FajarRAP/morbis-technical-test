@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\DB;
 
 class QueueActionController extends Controller
 {
-
     public function next()
     {
         Queue::where('date', today())
@@ -28,5 +27,24 @@ class QueueActionController extends Controller
         }
 
         return response()->json($nextQueue);
+    }
+
+    public function take(Request $request)
+    {
+        return DB::transaction(function () {
+            $today = today()->toDateString();
+            $lastQueue = Queue::where('date', $today)
+                ->lockForUpdate()->max('number');
+
+            $nextNumber = $lastQueue ? $lastQueue + 1 : 1;
+
+            $newQueue = Queue::create([
+                'number' => $nextNumber,
+                'date' => $today,
+                'status' => 'waiting',
+            ]);
+
+            return response()->json($newQueue);
+        });
     }
 }
