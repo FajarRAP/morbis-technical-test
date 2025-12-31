@@ -27,4 +27,16 @@ class QueueListController extends Controller
             'waitingCount' => $waitingList->count()
         ]);
     }
+
+    public function waitingList()
+    {
+        $today = now()->toDateString();
+
+        $waitingList = Queue::where('date', $today)
+            ->where('status', 'waiting')
+            ->orderBy('number', 'asc')
+            ->get();
+
+        return response()->json($waitingList);
+    }
 }
