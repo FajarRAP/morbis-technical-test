@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [QueueDisplayController::class, 'index'])->name('queue.display');
 Route::get('/queue/current', [QueueDisplayController::class, 'current'])->name('queue.current');
-Route::post('/queue/take', [QueueDisplayController::class, 'take'])->name('queue.take');
+Route::post('/queue/take', [QueueActionController::class, 'take'])->name('queue.take');
 
 Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('dashboard', [QueueListController::class, 'index'])->name('dashboard');
