@@ -7,9 +7,7 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
                 <div class="md:col-span-2">
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6 text-gray-900 text-center">
@@ -28,15 +26,10 @@
                                 <p class="mb-4 text-sm text-gray-500">Klik tombol di bawah untuk memanggil antrian
                                     berikutnya.</p>
 
-                                <button onclick="callNext()" id="btn-next"
-                                    class="w-full inline-flex justify-center items-center px-6 py-6 bg-gray-800 border border-transparent rounded-lg font-bold text-xl text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 gap-3 shadow-lg">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                    </svg>
+                                <x-primary-button id="btn-next"
+                                    class="font-bold !text-xl w-full justify-center gap-3 !p-6">
                                     Panggil Berikutnya
-                                </button>
+                                </x-primary-button>
                             </div>
 
                         </div>
@@ -78,8 +71,72 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
+
+    @push('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script>
+            async function callNextQueue() {
+                const originalButtonText = this.innerHTML;
+
+                this.disabled = true;
+                this.classList.add('opacity-75', 'cursor-not-allowed');
+                this.innerHTML = 'Memanggil...';
+
+                try {
+                    const response = await axios.post("{{ route('admin.next') }}");
+
+                    if (response.data) {
+                        updateDisplay(response.data);
+                    } else {
+                        alert('Tidak ada antrian menunggu.');
+                    }
+                } catch (error) {
+                    alert(`Error: ${error}`)
+                } finally {
+                    this.disabled = false;
+                    this.classList.remove('opacity-75', 'cursor-not-allowed');
+                    this.innerHTML = originalButtonText;
+                }
+            }
+
+            async function fetchWaitingList() {
+                const response = await axios.get("{{ route('queue.waiting-list') }}");
+                const data = response.data
+
+                const listContainer = document.getElementById('waiting-list');
+                const countDisplay = document.getElementById('count-display');
+
+                countDisplay.innerText = data.length;
+
+                if (data.length === 0) {
+                    listContainer.innerHTML =
+                        '<li class="py-8 text-center text-gray-400 text-sm italic">Tidak ada antrian menunggu.</li>';
+                } else {
+                    let html = '';
+                    data.forEach(q => {
+                        html += `
+                            <li class="py-3 flex justify-between items-center animate-pulse-once">
+                                <span class="text-lg font-semibold text-gray-700">No. ${q.number}</span>
+                                <span class="text-xs text-gray-400">Baru saja</span>
+                            </li>`;
+                    });
+                    listContainer.innerHTML = html;
+                }
+            }
+
+            function updateDisplay(data) {
+                if (data.number) {
+                    document.getElementById('admin-current-number').innerText = data.number;
+                }
+
+                fetchWaitingList();
+            }
+
+            const nextButton = document.getElementById('btn-next');
+            nextButton.addEventListener('click', callNextQueue);
+        </script>
+    @endpush
 </x-app-layout>
