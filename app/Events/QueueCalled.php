@@ -17,7 +17,7 @@ class QueueCalled implements ShouldBroadcast
     /**
      * Create a new event instance.
      */
-    public function __construct(public int $queueNumber, public  int $waitingCount) {}
+    public function __construct(public int $queueNumber, public int $waitingCount) {}
 
     /**
      * Get the channels the event should broadcast on.
@@ -27,7 +27,7 @@ class QueueCalled implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('queue-called'),
+            new Channel('queue-channel'),
         ];
     }
 }
