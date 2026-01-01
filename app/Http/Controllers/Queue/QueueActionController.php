@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Queue;
 
 use App\Events\QueueCalled;
+use App\Events\QueueCreated;
 use App\Http\Controllers\Controller;
 use App\Models\Queue;
 use Illuminate\Http\Request;
@@ -47,6 +48,9 @@ class QueueActionController extends Controller
                 'date' => $today,
                 'status' => 'waiting',
             ]);
+
+            $waitingCount = Queue::where('date', $today)->where('status', 'waiting')->count();
+            QueueCreated::dispatch($waitingCount, $newQueue->number, $newQueue->created_at);
 
             return response()->json($newQueue);
         });
