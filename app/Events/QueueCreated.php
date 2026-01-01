@@ -13,12 +13,12 @@ use Illuminate\Queue\SerializesModels;
 
 class QueueCreated implements ShouldBroadcast
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable, InteractsWithSockets;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(public int $waitingCount, public Queue $queue) {}
+    public function __construct(public int $waitingCount, public int $queueNumber, public $createdAt) {}
 
     /**
      * Get the channels the event should broadcast on.
@@ -28,7 +28,7 @@ class QueueCreated implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('queue-created'),
+            new Channel('queue-channel'),
         ];
     }
 }
