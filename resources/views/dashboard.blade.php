@@ -11,8 +11,7 @@
                 <div class="md:col-span-2">
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6 text-gray-900 text-center">
-
-                            <h3 class="text-lg font-medium text-gray-500 uppercase tracking-wider mb-2">Sedang Melayani
+                            <h3 class="text-lg font-medium text-gray-500 uppercase tracking-wider mb-2">Nomor Antrian
                             </h3>
 
                             <div class="py-8">
@@ -31,7 +30,6 @@
                                     Panggil Berikutnya
                                 </x-primary-button>
                             </div>
-
                         </div>
                     </div>
 
@@ -58,8 +56,7 @@
                                         <li class="py-3 flex justify-between items-center">
                                             <span class="text-lg font-semibold text-gray-700">No.
                                                 {{ $queue->number }}</span>
-                                            <span
-                                                class="text-xs text-gray-400">{{ $queue->created_at->format('H:i') }}</span>
+                                            <span class="text-xs text-gray-400">{{ $queue->created_at }}</span>
                                         </li>
                                     @empty
                                         <li class="py-8 text-center text-gray-400 text-sm italic" id="empty-msg">
@@ -77,6 +74,22 @@
 
     @push('scripts')
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script type="module">
+            Echo.channel('queue-channel')
+                .listen('QueueCreated', (e) => {
+                    const listContainer = document.getElementById('waiting-list');
+                    const countDisplayEl = document.getElementById('count-display');
+                    const newLi = document.createElement('li');
+                    newLi.className = 'py-3 flex justify-between items-center animate-pulse-once';
+                    newLi.innerHTML = `
+                        <span class="text-lg font-semibold text-gray-700">No. ${e.queueNumber}</span>
+                        <span class="text-xs text-gray-400">${e.createdAt}</span>
+                    `;
+
+                    countDisplayEl.innerHTML = e.waitingCount;
+                    listContainer.appendChild(newLi);
+                });
+        </script>
         <script>
             async function callNextQueue() {
                 const originalButtonText = this.innerHTML;
@@ -120,7 +133,7 @@
                         html += `
                             <li class="py-3 flex justify-between items-center animate-pulse-once">
                                 <span class="text-lg font-semibold text-gray-700">No. ${q.number}</span>
-                                <span class="text-xs text-gray-400">Baru saja</span>
+                                <span class="text-xs text-gray-400">${q.created_at}</span>
                             </li>`;
                     });
                     listContainer.innerHTML = html;
