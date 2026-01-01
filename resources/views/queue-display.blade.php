@@ -38,7 +38,7 @@
     @push('scripts')
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
         <script type="module">
-            Echo.channel('queue-called')
+            Echo.channel('queue-channel')
                 .listen('QueueCalled', (e) => {
                     const currentNumberElem = document.getElementById('current-number');
                     const waitingCountElem = document.getElementById('waiting-count');
