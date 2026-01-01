@@ -1,59 +1,100 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Morbis Technical Test
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This repository is a small Laravel application used for a queue display and anonymous ticketing demo.
 
-## About Laravel
+## Quick Start (English)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+These steps will get the project running locally.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Prerequisites
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+-   PHP 8.1+ (see `composer.json`)
+-   Composer
+-   Node.js + npm (or pnpm)
+-   A database (MySQL, MariaDB, or SQLite)
 
-## Learning Laravel
+Local setup
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+1.  Clone the repository and install PHP dependencies:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+```
 
-## Laravel Sponsors
+2.  Configure the database in `.env`:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+-   For SQLite (quick): create the file `database/database.sqlite` and set `DB_CONNECTION=sqlite` and `DB_DATABASE=${PWD}/database/database.sqlite` (or an absolute path on Windows).
+-   For MySQL/MariaDB: set `DB_CONNECTION=mysql`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`.
 
-### Premium Partners
+3.  Run migrations and seeders (if any):
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+php artisan migrate --seed
+```
 
-## Contributing
+4.  Install frontend dependencies and start the development environment.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+The project uses Composer scripts to start the dev environment. Run:
 
-## Code of Conduct
+```bash
+composer run dev
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+If you prefer the npm commands directly:
 
-## Security Vulnerabilities
+```bash
+npm install
+npm run dev
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Note: `composer run dev` is provided as a convenience entry (per project instructions).
 
-## License
+5.  Start Laravel Reverb (optional feature):
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+php artisan reverb:start
+```
+
+This will start the Reverb process if the project includes the Reverb package/commands. Check the command output for the listening URL.
+
+6.  Access the app
+
+Open the URL printed by the development command (or http://127.0.0.1:8000 if using `php artisan serve`) in your browser. The public queue view is available at `/`.
+
+API endpoints
+
+-   GET `/queue/current` — returns JSON with current serving, waiting list, and last number.
+-   POST `/queue/take` — create a new anonymous ticket for today (CSRF token required).
+
+Tests
+
+Run the test suite with Pest or PHPUnit:
+
+```bash
+./vendor/bin/pest
+# or
+php artisan test
+```
+
+Useful commands summary
+
+```bash
+composer install
+composer run dev         # start frontend/dev environment (project convention)
+php artisan migrate --seed
+php artisan reverb:start # start Laravel Reverb service
+php artisan storage:link
+./vendor/bin/pest
+```
+
+Troubleshooting
+
+-   If the app cannot connect to the database, double-check your `.env` values and ensure the DB server is reachable.
+-   For a quick local setup without a DB server, use SQLite as described above.
+-   If `composer run dev` fails, run `npm install` then `npm run dev` directly.
+
+Want extras?
+
+I can add convenient `composer` scripts or a small `Makefile`/`README` section to automate setup commands—tell me which you'd prefer.
