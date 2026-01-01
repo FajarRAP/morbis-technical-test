@@ -7,20 +7,16 @@
             </div>
 
             <div class="p-8 text-center border-b border-gray-200">
-                <h2 class="text-gray-500 text-sm font-semibold uppercase tracking-wider">Sedang Melayani</h2>
+                <h2 class="text-gray-500 text-sm font-semibold uppercase tracking-wider">Nomor Antrian</h2>
 
                 <div id="current-number" class="text-8xl font-black text-gray-800 my-4 transition-all duration-300">
                     {{ $currentNumber ?? '-' }}
                 </div>
-
-                <p class="text-gray-400 text-sm">Nomor Antrian</p>
             </div>
 
             <div class="p-6 bg-gray-50">
                 <button id="btn-take"
                     class="inline-flex items-center justify-center w-full px-6 py-4 bg-blue-600 border border-transparent rounded-xl font-semibold text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-lg gap-2">
-
-                    <i class="fa-solid fa-ticket"></i>
                     Ambil Nomor Antrian
                 </button>
 
@@ -41,6 +37,16 @@
 
     @push('scripts')
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script type="module">
+            Echo.channel('queue-called')
+                .listen('QueueCalled', (e) => {
+                    const currentNumberElem = document.getElementById('current-number');
+                    const waitingCountElem = document.getElementById('waiting-count');
+
+                    currentNumberElem.textContent = e.queueNumber;
+                    waitingCountElem.textContent = e.waitingCount;
+                });
+        </script>
         <script>
             const takeButton = document.getElementById('btn-take');
             takeButton.addEventListener('click', takeQueue);
@@ -53,12 +59,13 @@
                     const response = await axios.post("{{ route('queue.take') }}");
 
                     if (response.data) {
-                        // do something with response data
+                        const waitingCountEl = document.getElementById('waiting-count');
+                        const count = parseInt(waitingCountEl.textContent) + 1;
+                        waitingCountEl.textContent = count;
                     } else {
                         alert('Gagal mengambil nomor antrian. Silakan coba lagi.');
                     }
                 } catch (error) {
-                    console.error(error);
                     alert('Terjadi kesalahan saat mengambil nomor antrian.');
                 } finally {
                     takeButton.disabled = false;
