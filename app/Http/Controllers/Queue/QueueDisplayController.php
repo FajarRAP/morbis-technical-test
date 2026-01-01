@@ -13,12 +13,18 @@ class QueueDisplayController extends Controller
 {
     public function index()
     {
-        $query = Queue::query();
-        $query->where('date', today());
+        $today = now()->toDateString();
+
+        $current = Queue::where('date', $today)
+            ->where('status', 'serving')
+            ->first();
+        $waitingCount = Queue::where('date', $today)
+            ->where('status', 'waiting')
+            ->count();
 
         return view('queue-display', [
-            'currentNumber' => $query->orderBy('number')->first()->number,
-            'waitingCount' => $query->where('status', 'waiting')->count(),
+            'currentNumber' => $current ? $current->number : 0,
+            'waitingCount' => $waitingCount,
         ]);
     }
 }
